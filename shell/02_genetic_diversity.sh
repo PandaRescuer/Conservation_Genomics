@@ -14,6 +14,8 @@ python filter_chr.py ${gatk_final_vcf_out_dir}/merge.novariant.QC.recode.vcf ${n
 picard MergeVcfs -I ${novariant_vcf} -I ${snp_vcf} -O ${het_vcf}
 
 # calculate genome-wide heterozygosity
+plink -bfile ${bfile} --out ${out_dir}/all_heterozygosity --allow-extra-chr --noweb --het
+
 # calculate per-site heterozygosity in non-overlapping 1-Mb windows across called autosome
 python cal_het_sliding_window_single_sample.py ${het_vcf} ${bed_file} ${var} ${window_dir}
 
