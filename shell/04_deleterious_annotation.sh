@@ -17,7 +17,7 @@ python ${python_script} cactus_bear_no_anc.maf 6_cactus_bear_no_anc.maf
 # Identify variant sites between giant panda and other species
 python ${python_script} 6_cactus_bear_no_anc.maf PSV_add_site.bed
 
-# Replace RMA and perform deleterious mutation prediction
+# Replace RMA
 python ${python_script} ${bed} ${vcf} ${ref_fa} ${RMA_fa} ${RMA_vcf}
 
 # SIFT
