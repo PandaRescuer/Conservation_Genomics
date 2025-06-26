@@ -32,10 +32,6 @@ plink -bfile ${bfile} --homozyg --homozyg-density 50 --homozyg-gap 1000 --homozy
 gcta --bfile ${bfile} --make-grm --make-grm-alg 1 --out  ${pca_out}/all_grm
 gcta --grm ${pca_out}/all_grm --pca 5 --out ${pca_out}/all_pca
 
-# LD
-${PopLDdecay} -InVCF ${vcf} -OutStat ${outstat} -SubPop ${sublist}
-perl Plot_MultiPop.pl -inList ${multilist} -out ${out}
-
 # change chr id to number
 python rename_chr.py ${final_vcf_file} ${rename_vcf}
 
