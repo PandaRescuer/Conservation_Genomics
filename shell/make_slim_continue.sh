@@ -10,8 +10,9 @@ rescue_sex=${7}
 rescue_Heterozygosity=${8}
 rescue_Het_delmnts=${9}
 burn_in_time=${10}
-slim_file=${11}
-out_dir=${12}
+min_ind_num=${11}
+slim_file=${12}
+out_dir=${13}
 
 
 filename=$(basename "${slim_file}" .txt)
@@ -21,37 +22,37 @@ initialize() {
 
 	initializeSLiMModelType("nonWF");
 	
-	defineConstant("burn_in_time", ${burn_in_time});				              // burn-in
-	defineConstant("first_decline_time", 9000);		                        // first_decline
-	defineConstant("second_decline_time", ${second_decline_time});	    	// second_decline
+	defineConstant("burn_in_time", ${burn_in_time});				// burn-in
+	defineConstant("first_decline_time", 9000);		// first_decline
+	defineConstant("second_decline_time", ${second_decline_time});		// second_decline
 
-	defineConstant("K_burn_in", 47100);					                          // burn-in, carrying capacity
-	defineConstant("K_decline_first", 2355);			                        // first decline, carrying capacity
-	defineConstant("K_decline_big", 471); 				                        // second decline, carrying capacity
-	defineConstant("N_decline_small", ${N_decline_small}); 			          // small poppulation, bottleneck, initial numbery
-	defineConstant("K_decline_small", ${K_decline_small});			          // small population, decline, carrying capacity
+	defineConstant("K_burn_in", 47100);					// burn-in, carrying capacity
+	defineConstant("K_decline_first", 2355);			// first decline, carrying capacity
+	defineConstant("K_decline_big", 471); 				// second decline, carrying capacity
+	defineConstant("N_decline_small", ${N_decline_small}); 		 	// small poppulation, bottleneck, initial numbery
+	defineConstant("K_decline_small", ${K_decline_small});			// small population, decline, carrying capacity
 	
-	defineGlobal("start_rescue",0);						                            // variable to start rescue
-	defineGlobal("cycle_start_rescue",0);				                          // record cycle of start rescue
-	defineGlobal("rescue_time", ${rescue_time});						              // the times of rescue 
-	defineConstant("rescue_num", ${rescue_num});						              // The number of individuals in a rescue process 	
-	defineConstant("year_rescue", ${year_rescue}); 					              // rescue every # years
-	defineConstant("rescue_sex", "${rescue_sex}");			                  // sex of inds used for rescue
+	defineGlobal("start_rescue",0);						// variable to start rescue
+	defineGlobal("cycle_start_rescue",0);				// record cycle of start rescue
+	defineGlobal("rescue_time", ${rescue_time});						// the times of rescue 
+	defineConstant("rescue_num", ${rescue_num});						// The number of individuals in a rescue process 	
+	defineConstant("year_rescue", ${year_rescue}); 					// rescue every # years
+	defineConstant("rescue_sex", "${rescue_sex}");			// sex of inds used for rescue
 	defineConstant("rescue_Heterozygosity", "${rescue_Heterozygosity}");	// selcet Heterozygosity of inds used for rescue	(high/low)
-	defineConstant("rescue_Het_delmnts", "${rescue_Het_delmnts}");		    // selcet Heterozygous deleterious mutations of inds used for rescue (high/low)
-	defineConstant("minIndNum", 4); 						                          // minimum pop size to start rescue
+	defineConstant("rescue_Het_delmnts", "${rescue_Het_delmnts}");		// selcet Heterozygous deleterious mutations of inds used for rescue (high/low)
+	defineConstant("minIndNum", ${min_ind_num}); 						// minimum pop size to start rescue
 	
-	defineConstant("fitness_Scale", 1.0);				                          // fitness scale
-	defineConstant("sampleSize", 30); 					                          // sample to stats
-	defineConstant("ROHcutoff", 100000);				                          // ROH to stats >1Mb
+	defineConstant("fitness_Scale", 1.0);				// fitness scale
+	defineConstant("sampleSize", 30); 					// sample to stats
+	defineConstant("ROHcutoff", 100000);				// ROH to stats >1Mb
 	
-	defineConstant("p_repr", 0.625); 					                            // annual probability of an adult female reproducing, wei,1994 
-	initializeSex("A"); 										                              // Sexual model
-	initializeMutationRate(1.29e-8); 					                            // zhao, 2013
+	defineConstant("p_repr", 0.625); 					// annual probability of an adult female reproducing, wei,1994 
+	initializeSex("A"); 										// Sexual model
+	initializeMutationRate(1.29e-8); 					// zhao, 2013
 	
-	defineConstant("g",18530); 						                               	// number of genes
-	defineConstant("geneLength", 1800); 			                          	// difine gene length
-	defineConstant("seqLength", g*geneLength);		                        // total gene length to caculate het
+	defineConstant("g",18530); 							// number of genes
+	defineConstant("geneLength", 1800); 				// difine gene length
+	defineConstant("seqLength", g*geneLength);		// total gene length to caculate het
 	cat("Genome length:"+seqLength+"\n");						
 	
 	defineConstant("L", c(0.6, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.0,0.0,0.0,0.0,0.0, 0.1, 0.2, 0.3, 0.3, 0.5, 1.0)); // age-dependent increases in mortality
@@ -59,8 +60,7 @@ initialize() {
 	defineConstant("h_strDel", 0.05); 
 	defineConstant("h_modDel", 0.2); 
 	defineConstant("h_wkDel", 0.45);
-
-  // Kyriazis, 2024
+	
 	// set up discrete DFE with four mutation types coming from gamma DFE
 	// augmented with recessive lethals
 	// this approach for implementing an h-s relationship is much faster than using fitness callbacks in SLiM (see manual)
@@ -108,7 +108,7 @@ initialize() {
 }
 
 
-
+//Kyriazis, 2024
 reproduction() {
 	for(pop in sim.subpopulations){
 		
@@ -154,7 +154,7 @@ reproduction() {
 }
 
 (burn_in_time+first_decline_time+second_decline_time+1) early() {		
-	cat("gen,popSize,meanFitness,meanHet,B_gen,B_year,FROH_1Mb,avgStrDel,avgModDel,avgWkDel,avgHomDel,avgHetDel,popSize_big,meanFitness_big,meanHet_big,B_gen_big,B_year_big,FROH_1Mb_big,avgStrDel_big,avgModDel_big,avgWkDel_big,avgHomDel_big,avgHetDel_big" + "\n");
+	cat("gen,popSize,meanFitness,meanHet,B_gen, B_year ,FROH_1Mb,avgStrDel,avgModDel,avgWkDel, avgHomDel, avgHetDel,popSize_big,meanFitness_big,meanHet_big,B_gen_big,B_year_big,FROH_1Mb_big,avgStrDel_big,avgModDel_big,avgWkDel_big, avgHomDel_big, avgHetDel_big" + "\n");
 }
 
 // print generation time and ages
@@ -193,7 +193,7 @@ reproduction() {
 	cat(sim.cycle+","+p1.individuals.size() + "," + stats + "\n");
 }
 
-// first decline
+// bottleneck
 burn_in_time+first_decline_time+second_decline_time+1 early() {
 	sim.addSubpop("p2",0);
 	migrants = sample(p1.individuals, N_decline_small);
@@ -239,7 +239,7 @@ early() {
 
 (burn_in_time+first_decline_time+second_decline_time+1):(burn_in_time+first_decline_time+second_decline_time+1000) late() {
 	//once pop size declines to minIndNum individuals, flip 'switch' to start genetic rescue
-	if(p2.individualCount <= minIndNum & start_rescue==0){
+	if(p2.individualCount <=minIndNum & start_rescue==0){
 		defineGlobal("start_rescue",1);
 		defineGlobal("cycle_start_rescue",sim.cycle+1);
 	}
@@ -269,7 +269,6 @@ early() {
 								rescue_individuals = c(rescue_individuals,ind);		
 							}					
 						}
-					//rescue_individuals = suitable_ind.individuals[suitable_ind.individuals.sex=='M' & suitable_ind.individuals.age >= 2 & suitable_ind.individuals.age <= 5 ];
 					} else {
 						if (females.size() < males.size()){
 							for (ind in s_ind){
@@ -278,7 +277,6 @@ early() {
 								}					
 							}
 						}
-					//rescue_individuals = suitable_ind.individuals[p1.individuals.sex=='F' & suitable_ind.individuals.age >= 2 & suitable_ind.individuals.age <= 5 ];
 					}
 				} else {
 					for (ind in s_ind){
@@ -286,24 +284,23 @@ early() {
 							rescue_individuals = c(rescue_individuals,ind);		
 						}					
 					}
-					//rescue_individuals = suitable_ind.individuals[suitable_ind.individuals.age >= 2 & suitable_ind.individuals.age <= 5];
 				}
 
 				//catn(rescue_individuals);
-				if (isNULL(rescue_individuals)){
+				if (isNULL(rescue_individuals) | size(rescue_individuals) == 0){
 					cat(sim.cycle+ ",Fail\n");
 					sim.simulationFinished();	
+				} else {
+					migrants = sample(rescue_individuals, 1);		
+					p2.takeMigrants(migrants);
 				}
-				migrants = sample(rescue_individuals, 1);		
-				p2.takeMigrants(migrants);
-				//sim.outputMutations(sim.mutationsOfType(m1));
+
 			}
 		//count down rescue time
 		defineGlobal("rescue_time", rescue_time-1);
 		}
-		// count down from 200 years
+		// count down
 		sim.tag = sim.tag - 1;
-		//catn(rescue_time+'\n'); 
 	}
 	
 	if(p2.individuals.size() < 2){
@@ -331,7 +328,6 @@ early() {
 			cat(sim.cycle+","+p2.individuals.size() + "," + small_stats +","+p1.individuals.size() + "," + big_stats + "\n");
 		}
 	}
- 
 	//case when p2 size is greater than or equal to sample size
 	if(p2.individuals.size() >= sampleSize){ 
 		if (p1.individuals.size() >= sampleSize){
@@ -346,7 +342,7 @@ early() {
 	}
 	
 	
-  // end sim when reach 1
+	// end sim when reach 1
 	if(sim.tag == 0){
 		sim.simulationFinished();
 	}
@@ -384,7 +380,7 @@ function (o) selectInd(o pop,s r_Heterozygosity,s r_Het_delmnts)
 	}
 	slope = SSxy / SSxx;
 	intercept = meanY - slope * meanX;
-	//catn(slope+"*hete+"+intercept);		
+
 	// individual selection
 	select_ind = c();
 	for (ind in inds) {
@@ -411,27 +407,6 @@ function (o) selectInd(o pop,s r_Heterozygosity,s r_Het_delmnts)
 			}
 		}
 	}
-
-  // Code for verifying correctness 
-	//rescue_hetero = c();
-	//rescue_delmuts = c();
-
-	//for (ind in select_ind) {
-	//	rescue_hetero = c(rescue_hetero, calcHeterozygosity(ind.genomes));
-	//	rescue_het_del_num = 0;
-	//	rescue_del_muts = c(ind.genomes.mutationsOfType(m1),ind.genomes.mutationsOfType(m2),ind.genomes.mutationsOfType(m3));
-	//	for(m in rescue_del_muts){
-	//		if(ind.genomes.mutationCountsInGenomes(m)==1){
-	//			rescue_het_del_num=rescue_het_del_num+1;
-	//		}
-	//	}
-	//	rescue_delmuts = c(rescue_delmuts, rescue_het_del_num);
-  // }
-			
-	//rescue_meanX = mean(rescue_hetero);
-	//rescue_meanY = mean(rescue_delmuts);
-	//catn('all het:'+meanX+', del:'+meanY);
-	//catn('res het:'+rescue_meanX+', del:'+rescue_meanY);
 	
 	return(select_ind);
 }
@@ -487,6 +462,26 @@ function (s) getStats(o pop, i sampSize)
 		ROH_length_1Mb = pos_het_diff[pos_het_diff > ROHcutoff]; //vector of ROHs for each individual	
 		ROH_length_sum_1Mb = sum(ROH_length_1Mb);
 		ROH_length_sumPerInd_1Mb = c(ROH_length_sumPerInd_1Mb, ROH_length_sum_1Mb); // add sum of ROHs for each individual to vector of ROHs for all individuals
+		
+		// Count deleterious genotypes for this individual
+    		del_muts = unique(c(
+        		individual.genomes.mutationsOfType(m1),
+        		individual.genomes.mutationsOfType(m2),
+        		individual.genomes.mutationsOfType(m3)
+    		));
+    		het_del_num = 0;
+    		hom_del_num = 0;
+    		for (m in del_muts) {
+       	 		mut_count = individual.genomes.mutationCountsInGenomes(m);
+        		if (mut_count == 1) {
+            			het_del_num = het_del_num + 1;
+        			}
+        		else if (mut_count == 2) {
+            			hom_del_num = hom_del_num + 1;
+       			 }
+    		}
+    		count_hom_Del = c(count_hom_Del, hom_del_num);
+    		count_het_Del = c(count_het_Del, het_del_num);	
 	}
 	//calculate 2B (inbreeding load)
 	
@@ -513,28 +508,9 @@ function (s) getStats(o pop, i sampSize)
 	
 	B_gen = 2*(sum(q*s_gen)-sum(q^2*s_gen)-2*sum(q*(1-q)*s_gen*h));
 	
-	// 
-	del_muts = c(individual.genomes.mutationsOfType(m1),individual.genomes.mutationsOfType(m2),individual.genomes.mutationsOfType(m3));
-	het_del_num = 0;
-	hom_del_num = 0;
-	if (del_muts.length()>0) {
-		for(m in del_muts){
-			//check if mut is heterozygous
-			if(individual.genomes.mutationCountsInGenomes(m)==1){
-				het_del_num=het_del_num+1;
-			}
-			else{
-				hom_del_num=hom_del_num+1;		
-			}
-		}
-	}
-	count_hom_Del=c(count_hom_Del,hom_del_num);
-	count_het_Del=c(count_het_Del,het_del_num);	
-
 	return(mean(pop.cachedFitness(NULL)/pop.individuals.tagF) + "," + meanHet + "," + B_gen + "," + B_year + "," + mean(ROH_length_sumPerInd_1Mb)/seqLength + "," + count_strDel+ "," + count_modDel + "," + count_wkDel+","+mean(count_hom_Del)+","+mean(count_het_Del));
 }
 
 
 EOM
-
 
