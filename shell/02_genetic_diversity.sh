@@ -25,7 +25,8 @@ plink -vcf ${vcf_file} --recode --out ${bfile} --allow-extra-chr --noweb --make-
 plink -bfile ${bfile} --missing --out ${out_dir}/miss  --allow-extra-chr --noweb
 
 # ROH
-plink -bfile ${bfile} --homozyg --homozyg-density 50 --homozyg-gap 1000 --homozyg-kb 100 --homozyg-snp 25 --homozyg-window-het 1 --homozyg-window-snp 100 --homozyg-window-threshold 0.05 --out ${ROH_dir}/ROH
+bcftools +fill-tags ${vcf_file} -Oz -o ${vcf_file.filltags} -- -t AF,MAF,F_MISSING
+bcftools roh -G30 --AF-tag AF --rec-rate 1e-8 -o ${bcftools_roh} ${vcf_file.filltags}
 
 # PCA
 gcta --bfile ${bfile} --make-grm --make-grm-alg 1 --out  ${pca_out}/all_grm
