@@ -28,13 +28,6 @@ plink -bfile ${bfile} --missing --out ${out_dir}/miss  --allow-extra-chr --noweb
 bcftools +fill-tags ${vcf_file} -Oz -o ${vcf_file.filltags} -- -t AF,MAF,F_MISSING
 bcftools roh -G30 --AF-tag AF --rec-rate 1e-8 -o ${bcftools_roh} ${vcf_file.filltags}
 
-# PCA
-gcta --bfile ${bfile} --make-grm --make-grm-alg 1 --out  ${pca_out}/all_grm
-gcta --grm ${pca_out}/all_grm --pca 5 --out ${pca_out}/all_pca
-
-# change chr id to number
-python rename_chr.py ${final_vcf_file} ${rename_vcf}
-
 # Admixture
 plink --vcf "$rename_vcf" --allow-extra-chr --double-id --make-bed --out "$raw_prefix" --noweb
 plink --bfile "$raw_prefix" --geno 0.05 --maf 0.05 --allow-extra-chr --make-bed --out "$qc_prefix" --noweb
@@ -62,6 +55,10 @@ for log in "${out_dir}"/admixture.K*.seed*.log; do
   cv=$(grep "CV error" "$log" | sed -E 's/.*CV error \(K=[0-9]+\): ([0-9.eE+-]+)/\1/')
   printf "%s,%s,%s\n" "$k" "$seed" "$cv" >> "${out_dir}/admixture.cv_error.csv"
 done
+
+# PCA
+gcta --bfile ${pruned_prefix} --make-grm --make-grm-alg 1 --out  ${pca_out}/all_grm
+gcta --grm ${pca_out}/all_grm --pca 5 --out ${pca_out}/all_pca
 
 # tree
 python vcf2phylip.py -i ${rename_vcf}
