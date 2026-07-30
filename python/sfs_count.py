@@ -24,7 +24,7 @@ for file in filelist:
             name_dict[newline[2]]=newline[0]
     samples = []
 
-    # all samples
+    # samples
     SC_WLP = ['GP01', 'GP02', 'GP03', 'GP04', 'GP05', 'GP06', 'GP07', 'GP09', 'GP10']
     QLI = ['QLI05c', 'QLI06c', 'QLI07c', 'QLI04c', 'GP55']
     SC_CAP = ['GP12', 'GP13', 'GP14', 'GP15', 'GP16', 
