@@ -15,10 +15,10 @@ python ${orthofinder.py} -f ${longest_pep} -t 8 -a 1
 python extract_maf_blocks.py ${cactus.no_anc.maf} ${cactus.all_species.maf}
 
 # Identify variant sites between giant panda and other species
-python extract_ingroup_specific_sites_from_maf.py ${cactus.all_species.maf} ${site.bed}
+python extract_sites_from_maf.py ${cactus.all_species.maf} ${site.bed}
 
 # Replace RMA
-python correct_RMA_sites_in_vcf_and_reference.py ${site.bed} ${vcf} ${ref_fa} ${RMA_fa} ${RMA_vcf}
+python correct_RMA_sites_in_vcf.py ${site.diff.bed} ${site.same.bed} [${vcf1} ${RMA_vcf1} ${vcf2} ${RMA_vcf2} ...]
 
 # SIFT
 # Build database
@@ -31,4 +31,6 @@ java -jar SIFT4G_Annotator.jar -c -i ${missense_snp_RMA.vcf} -d ${sift_database}
 # find deleterious and tolerated mutations
 python classify_vcf_by_sift_prediction.py
 
+# Extract the strict subset from the SIFT prediction set
+python filter_vcf_by_RMA.py ${mis.RMA.vcf} ${DEL.vcf} ${TOL.vcf} ${DEL.filtered.vcf} ${TOL.filtered.vcf} 2> filter_RMA.stats.log
 
