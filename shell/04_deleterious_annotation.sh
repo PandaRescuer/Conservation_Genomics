@@ -39,3 +39,8 @@ correct_RMA_sites_in_ref_genome.py ${site.diff.bed} ${site.same.bed} Ailuropoda_
 
 #Correct the reference genome using the RMA VCF, including LOF.
 correct_RMA_sites_in_ref_genome.py ${site.diff.bed} ${site.same.bed} Ailuropoda_melanoleuca.fasta ASM200744v3_AncestralAllSNP_V1.fa ${mis.vcf} ${mis.RMA.vcf} ${syn.vcf} ${syn.RMA.vcf} ${CNE.vcf} ${CNE.RMA.vcf} ${LOF.vcf} ${LOF.RMA.vcf}
+
+# SFS
+python bootstrap_sfs.py
+python sfs_count.py
+python merge_SFS.py
