@@ -9,6 +9,7 @@ You are welcome to use, cite, and discuss this project.
 - **July 2024** — Version 0.1 released.
 - **June 2025** — Version 0.2 released.
 - **July 2026** — Version 0.3 released.
+- **November 2026** — Version 0.4 released.
 
 ## Citation
 The manuscript describing this project is currently under review.
